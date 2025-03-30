@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yolo-occlusion
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yolo-occlusion
+  template:
+    metadata:
+      labels:
+        app: yolo-occlusion
+    spec:
+      containers:
+      - name: yolo-occlusion
+        image: yolo-occlusion:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/app/key.json"
+        volumeMounts:
+        - name: service-account
+          mountPath: "/app/key.json"
+          subPath: "key.json"
+      volumes:
+      - name: service-account
+        secret:
+          secretName: pubsub-key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yolo-occlusion
+spec:
+  selector:
+    app: yolo-occlusion
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP

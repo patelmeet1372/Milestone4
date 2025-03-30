@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yolo-pedestrian
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yolo-pedestrian
+  template:
+    metadata:
+      labels:
+        app: yolo-pedestrian
+    spec:
+      containers:
+      - name: yolo-pedestrian
+        image: yolo-pedestrian:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/app/key.json"
+        volumeMounts:
+        - name: service-account
+          mountPath: "/app/key.json"
+          subPath: "key.json"
+      volumes:
+      - name: service-account
+        secret:
+          secretName: pubsub-key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yolo-pedestrian
+spec:
+  selector:
+    app: yolo-pedestrian
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP

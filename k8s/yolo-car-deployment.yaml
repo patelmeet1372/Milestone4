@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yolo-car
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yolo-car
+  template:
+    metadata:
+      labels:
+        app: yolo-car
+    spec:
+      containers:
+      - name: yolo-car
+        image: yolo-car:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/app/key.json"
+        volumeMounts:
+        - name: service-account
+          mountPath: "/app/key.json"
+          subPath: "key.json"
+      volumes:
+      - name: service-account
+        secret:
+          secretName: pubsub-key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yolo-car
+spec:
+  selector:
+    app: yolo-car
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP

@@ -1,0 +1,5 @@
+# Ignore service account keys
+**/key.json
+
+# Ignore nested git repository
+SOFE4630U-Design/

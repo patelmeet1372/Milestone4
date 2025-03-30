@@ -1,0 +1,6 @@
+ultralytics
+opencv-python
+numpy
+google-cloud-pubsub
+torch
+torchvision
